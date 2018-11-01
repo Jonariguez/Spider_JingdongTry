@@ -8,7 +8,7 @@
 * selenium 3.14.1
 * pyquery 1.4
 
-## 使用说明
+### 使用说明
 
 1. 直接点击py文件即可执行
 2. 待浏览器打开京东后，手动登陆京东账户。
@@ -18,6 +18,8 @@
 ### 功能
 #### Method_First
 作者：[Jonariguez](https://github.com/Jonariguez)
+
+* 待添加
 
 #### Method_Second
 作者：[jzplp](https://github.com/jzplp)
@@ -30,6 +32,7 @@
 
 ### 参考资料
 
-[Python3网络爬虫开发实战](https://germey.gitbooks.io/python3webspider/content/)
-
-[xmlns属性导致pyquery查询元素失败](https://blog.csdn.net/zx1245773445/article/details/82821642)
+* Python3网络爬虫开发实战
+  https://germey.gitbooks.io/python3webspider/content/
+* xmlns属性导致pyquery查询元素失败
+  https://blog.csdn.net/zx1245773445/article/details/82821642
