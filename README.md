@@ -32,7 +32,7 @@
 
 ### 参考资料
 
-* Python3网络爬虫开发实战
+* Python3网络爬虫开发实战  <br>
   https://germey.gitbooks.io/python3webspider/content/
-* xmlns属性导致pyquery查询元素失败
+* xmlns属性导致pyquery查询元素失败 <br>
   https://blog.csdn.net/zx1245773445/article/details/82821642
