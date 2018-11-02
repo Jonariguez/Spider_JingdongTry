@@ -18,7 +18,7 @@ wait = WebDriverWait(browser,10)
 
 #打开正确/屏蔽词文件,并处理
 keys = []
-for line in open("Truekeyword.txt", 'r'):
+for line in open("Truekeyword.txt", 'r' ,encoding='UTF-8' ):
     line = line[0:line.find('\n')]
     if line == '':
         continue;
@@ -187,6 +187,7 @@ def trycid():
     maxApplyNum = 300
     iApplyNum = 0
     #试用类型
+    #家用电器737 手机数码652 电脑办公670 家居家装1620 服饰鞋包1315 
     cids = ['737', '652' ,'670', '1620' ]
     browser.get('https://try.jd.com/')
     browser.get('https://try.jd.com/activity/getActivityList')
