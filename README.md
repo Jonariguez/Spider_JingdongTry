@@ -36,3 +36,15 @@
   https://germey.gitbooks.io/python3webspider/content/
 * xmlns属性导致pyquery查询元素失败 <br>
   https://blog.csdn.net/zx1245773445/article/details/82821642
+
+### 待实现的功能
+
+#### Method_Second
+- [ ] 优化程序结构
+- [ ] 在商品列表处剔除已经申请过的商品
+- [ ] 断点续申
+  - [ ] 记录申请过的类别和页数，当天第二次打开时从此处开始继续
+  - [ ] 记录申请过的商品数，当天第二次打开时继续计数
+- [ ] 申请完成可以自动关闭电脑
+- [ ] 添加图形界面
+
