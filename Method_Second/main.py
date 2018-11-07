@@ -39,7 +39,7 @@ def goodJudge(goodName, goodPrice):
     """
     根据商品名称和价格判断是否试用该商品
     """
-    if goodPrice < 20:
+    if goodPrice < 45:
         return False
 
     for key in keys:
@@ -202,5 +202,5 @@ if __name__ == '__main__':
     
     browser.get('https://www.jd.com/')
     #睡眠60以足够来手动登陆，这样就获得了cookies
-    time.sleep(30)
+    time.sleep(60)
     trycid()
