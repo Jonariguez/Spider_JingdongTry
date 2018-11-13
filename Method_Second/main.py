@@ -11,31 +11,36 @@ import json
 import time
 from pyquery import PyQuery as pq
 
+#全局变量
 #打开chrome浏览器
 browser = webdriver.Chrome()
 #设置最长等待时间为10秒
 wait = WebDriverWait(browser,10)
 
 #打开正确/屏蔽词文件,并处理
-keys = []
-for line in open("Truekeyword.txt", 'r' ,encoding='UTF-8' ):
-    line = line[0:line.find('\n')]
-    if line == '':
-        continue;
-    line = line.split('/')
-    line[0] = line[0].strip()
-    line[1] = line[1].strip()
-    if line[0] == '':
-        line[0] = []
-    else:
-        line[0] = line[0].split(' ')
-    if line[1] == '':
-        line[1] = []
-    else:
-        line[1] = line[1].split(' ')
-    keys.append(line)
 
-def goodJudge(goodName, goodPrice):
+def genekeys():
+    #打开正确/屏蔽词文件,并处理
+    keys = []
+    for line in open("Truekeyword.txt", 'r' ,encoding='UTF-8' ):
+        line = line[0:line.find('\n')]
+        if line == '':
+            continue;
+        line = line.split('/')
+        line[0] = line[0].strip()
+        line[1] = line[1].strip()
+        if line[0] == '':
+            line[0] = []
+        else:
+            line[0] = line[0].split(' ')
+        if line[1] == '':
+            line[1] = []
+        else:
+            line[1] = line[1].split(' ')
+        keys.append(line)
+    return keys
+
+def goodJudge(goodName, goodPrice, keys):
     """
     根据商品名称和价格判断是否试用该商品
     """
@@ -61,7 +66,7 @@ def goodJudge(goodName, goodPrice):
                 return False
     return True
 
-def do_try(url, iApplyNum):
+def do_try(url):
     """
     对于某个商品申请试用
     url为申请网址 iApplyNum为当前申请成功的个数
@@ -80,35 +85,13 @@ def do_try(url, iApplyNum):
         #初始化pyquery
         doc = pq(html)
 
-        #CSS选择器 找出商品名称所在的标签
-        nameitems = doc('.root61 .container .w .product-intro .info .name').items()
-        for nameitem in nameitems:
-            #goodName商品名称 名称中包含试用方式 ：闪电试 厂商直发 等
-            goodName = nameitem.text()
-        #CSS选择器 找出商品价格所在的标签
-        priceitems = doc('.root61 .container .w .product-intro .info .price').items()
-        for priceitem in priceitems:
-            pricetext = priceitem.text()
-            #截取多余的文本
-            #找不到价格 出现暂无报价的情况
-            if pricetext.find('￥') == -1:
-                goodPrice = 0
-            else:
-                pricetext = pricetext[pricetext.find('￥')+2:]
-                #goodPrice 商品价格
-                goodPrice = float(pricetext)
-
-        if goodJudge(goodName, goodPrice) == False:
-            #不申请了
-            return 
-        
         #获取申请试用的botton
         button = wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR,'#product-intro > div.info > div.try-info.clearfix.bigImg > div.info-detail.chosen > div > div.btn-wrap > a'))
         )
         #如果上面写的不是申请试用，就申请下一个
         if button.text!='申请试用':
-            return
+            return False
         #点击申请试用
         button.click()
         #找到关注并申请的按钮
@@ -120,19 +103,15 @@ def do_try(url, iApplyNum):
         #点击关注
         button2.click()
         #此时试用一件商品完成
-        #输出产品名称
-        print("申请成功！" + str(goodPrice) + " " + goodName)
-        iApplyNum = iApplyNum +1
-
+        return True
         time.sleep(2)
     #抛出超时异常
     except TimeoutException:
         #这件商品不申请了，返回
-        return
+        return False
 
 
-def get_try(cid, iApplyNum, maxApplyNum):
-    browser.get('https://try.jd.com/')
+def get_try(cid, iApplyNum, maxApplyNum, keys):
     browser.get('https://try.jd.com/activity/getActivityList?page=1&cids='+cid)
 
     #获取网页的html源码
@@ -148,7 +127,7 @@ def get_try(cid, iApplyNum, maxApplyNum):
     pagestr = pagestr[2:]
     pagestr = pagestr[0:pagestr.find('\n')]
     pagenum = int(pagestr)
-    print("商品总页数：" + str(pagenum) )
+    print("商品总页数：" + str(pagenum+1) )
 
     for i in range(pagenum):
 
@@ -159,43 +138,73 @@ def get_try(cid, iApplyNum, maxApplyNum):
             time.sleep(2)
         html = browser.page_source
         doc = pq(html)
-        #CSS选择器 找出未申请的商品列表
-        items = doc('.root61 .container .w .goods-list .items .con .clearfix .item .try-item .link').items()
-        #print(type(items))
-        #print(items)
+        #CSS选择器 找出商品列表
+        items = doc('.root61 .container .w .goods-list .items .con .clearfix .item').items()
+        
         #迭代器转换为list类型
         items=list(items)
-        #items = items[0:2]
         
+        #对于每个商品进行处理
         for item in items:
-            #停1秒
-            time.sleep(1)
+            #按钮为已申请
+            if item('.try-item .try-button').text() == '已申请':
+                #已经申请过的不申请
+                continue
+            #商品名称
+            itemname = item('.try-item .p-name').text()
+            #商品价格
+            itempricetext = item('.try-item .p-price').text()
+            #截取多余的文本
+            #找不到价格 出现暂无报价的情况
+            if itempricetext.find('￥') == -1:
+                itemprice = 0
+            else:
+                itempricetext = itempricetext[itempricetext.find('￥')+1:]
+                #goodPrice 商品价格
+                itemprice = float(itempricetext)
+            if goodJudge(itemname, itemprice, keys) == False:
+                #不申请了
+                continue
+            
+            itemurl = item('.try-item .link')
             #试用该商品
-            do_try('https:'+item.attr('href') , iApplyNum)
-            #停2秒
-            time.sleep(2)
+            if do_try('https:'+itemurl.attr('href')) == True:
+                print("申请成功 " +str(itemprice) + "  " + itemname)
+                iApplyNum = iApplyNum + 1
+            #停3秒
+            time.sleep(3)
             browser.switch_to.window(browser.window_handles[0])
 
             if iApplyNum >= maxApplyNum:
                 print("已经成功申请" + str(maxApplyNum) + "件商品")
                 return
-        print(cid+'类:第'+str(i)+'页申请完成')
+        print(cid+'类:第'+str(i+1)+'页申请完成')
+
+
+def trycate():
+    """
+    控制申请类型
+    """
+    #试用类型
+    #家用电器737 手机数码652 电脑办公670 家居家装1620 服饰鞋包1315 生鲜美食12218 钟表奢品5025
+    cids = ['737', '652' ,'670', '1620', '1315', '12218' ,'5025' , ]
+    return cids
 
 def trycid():
-    
+
+    keys = genekeys()
     #京东限制 每天最大申请数量为300件
     maxApplyNum = 300
     iApplyNum = 0
     #试用类型
-    #家用电器737 手机数码652 电脑办公670 家居家装1620 服饰鞋包1315 生鲜美食12218 钟表奢品5025
-    cids = ['737', '652' ,'670', '1620', '1315', '12218' ,'5025' , ]
+    cids = trycate()
     browser.get('https://try.jd.com/')
     browser.get('https://try.jd.com/activity/getActivityList')
     #执行js脚本 打开一个新选项卡
     browser.execute_script('window.open()')
     browser.switch_to.window(browser.window_handles[0])
     for cid in cids:
-        get_try(cid, iApplyNum, maxApplyNum)
+        get_try(cid, iApplyNum, maxApplyNum, keys)
 
 
 if __name__ == '__main__':
