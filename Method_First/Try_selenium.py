@@ -1,3 +1,4 @@
+#coding=utf-8
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
@@ -44,11 +45,16 @@ def get_try(page):
     url='https://try.jd.com/activity/getActivityList'+'?page='+str(page)
     browser.get(url)
 
-    html = browser.page_source
+    time.sleep(2)
 
-    #利用PyQuery获得所有关于试用商品跳转的class=try-item的div标签
+    html = browser.page_source
+    #print(html)
+
+    #利用PyQuery获得所有关于试用商品跳转的class=item的<li>标签
     doc = pq(html)
-    items = doc('.root61 .container .w .goods-list .items .con .clearfix .item .try-item').items()
+    #因为已经申请过的商品的<li>标签中的class除了item，还有applied，故将其删除之后申请便可跳过已申请的商品
+    doc('.applied').remove()
+    items = doc('.root61 .container .w .goods-list .items .con .clearfix .item').items()
     #print(type(items))
     #print(items)
     items=list(items)
@@ -61,7 +67,7 @@ def get_try(page):
         print(try_url)
         time.sleep(1)
         do_try(try_url)
-        time.sleep(2)
+
 
 def Control_try(total_page):
     browser.get('https://try.jd.com/')
@@ -71,10 +77,10 @@ def Control_try(total_page):
         get_try(page)
 
 
-
 if __name__ == '__main__':
     browser.get('https://www.jd.com/')
 
     #睡眠50以足够来手动登陆，这样就获得了cookies
     time.sleep(50)
-    Control_try(2)
+    #申请前3页
+    Control_try(3)
