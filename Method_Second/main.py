@@ -44,7 +44,7 @@ def goodJudge(goodName, goodPrice, keys):
     """
     根据商品名称和价格判断是否试用该商品
     """
-    if goodPrice < 45:
+    if goodPrice < 30:
         return False
 
     for key in keys:
