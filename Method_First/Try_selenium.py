@@ -4,13 +4,20 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import  expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 import json
 import time
 import re
 from pyquery import PyQuery as pq
 
+#browser_for_login为正常浏览器，用于登录
+browser_for_login = webdriver.Chrome()
 
-browser = webdriver.Chrome()
+chrome_options = Options()
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--disable-gpu')
+#无头模式
+browser = webdriver.Chrome(chrome_options=chrome_options)
 wait = WebDriverWait(browser,10)
 
 #所有的sleep为了是减慢速度, 防止被检查异常
@@ -67,20 +74,33 @@ def get_try(page):
         print(try_url)
         time.sleep(1)
         do_try(try_url)
+        print("申请成功")
+        print('')
 
 
 def Control_try(total_page):
-    browser.get('https://try.jd.com/')
     browser.execute_script('window.open()')
     browser.switch_to.window(browser.window_handles[0])
     for page in range(1,total_page+1):
+        print('开始申请第'+str(page)+'页')
         get_try(page)
+        print('第'+str(page)+'页申请完成')
+
+#成功登录后将browser_for_login的cookies取出放到无头browser中即可
+def login():
+    browser_for_login.get('https://www.jd.com')
+    #睡眠40秒以有足够时间来登录
+    time.sleep(40)
+    cookies = browser_for_login.get_cookies()
+    browser_for_login.close()
+    browser.get('https://www.jd.com')
+    for cookie in cookies:
+        browser.add_cookie(cookie)
+
+    browser.get('https://www.jd.com')
 
 
 if __name__ == '__main__':
-    browser.get('https://www.jd.com/')
-
-    #睡眠50以足够来手动登陆，这样就获得了cookies
-    time.sleep(50)
+    login()
     #申请前3页
     Control_try(3)

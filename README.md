@@ -19,7 +19,10 @@
 #### Method_First
 作者：[Jonariguez](https://github.com/Jonariguez)
 
-* 待添加
+* 已经申请过的商品就不会再申请了
+* 申请的时候采用**headless模式**进行，就不用浏览器界面了，无限接近**无扰模式**
+* 程序开始运行时会打开Chrome浏览器并打开[https://www.jd.com](https://www.jd.com),只需要在该浏览器登录即可，
+40秒后浏览器会关闭，此时便开始申请商品。
 
 #### Method_Second
 作者：[jzplp](https://github.com/jzplp)
