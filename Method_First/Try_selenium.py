@@ -5,10 +5,9 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import  expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-import json
 import time
-import re
 from pyquery import PyQuery as pq
+from config import settings as SET
 
 #browser_for_login为正常浏览器，用于登录
 browser_for_login = webdriver.Chrome()
@@ -19,6 +18,9 @@ chrome_options.add_argument('--disable-gpu')
 #无头模式
 browser = webdriver.Chrome(chrome_options=chrome_options)
 wait = WebDriverWait(browser,10)
+
+total_num_of_products = SET['total_products']
+total_num_of_products_cur = 0
 
 #所有的sleep为了是减慢速度, 防止被检查异常
 def do_try(url):
@@ -32,7 +34,7 @@ def do_try(url):
         #如果按钮不是‘申请使用’，则说明该商品申请出错或者已经申请过了，则跳回到试用商品列表界面
         if button.text!='申请试用':
             browser.switch_to.window(browser.window_handles[0])
-            return
+            return False
         button.click()
         #等待关注商铺的信息出来，然后点击关注即可。如果无需关注，则可能会抛出超时异常
         button2 = wait.until(
@@ -43,9 +45,10 @@ def do_try(url):
 
         time.sleep(2)
         browser.switch_to.window(browser.window_handles[0])
+        return True
     except TimeoutException:
         browser.switch_to.window(browser.window_handles[0])     #抛出超时异常则返回到试用商品列表界面即可
-        return
+        return True
 
 
 def get_try(page):
@@ -73,9 +76,20 @@ def get_try(page):
         print(title)
         print(try_url)
         time.sleep(1)
-        do_try(try_url)
-        print("申请成功")
-        print('')
+        global total_num_of_products_cur
+        global total_num_of_products
+        if do_try(try_url) == True:
+            total_num_of_products_cur +=1
+            print("申请成功")
+            print('')
+        else :
+            print("申请失败")
+            print('')
+
+        #到达指定个数之后退出
+        if total_num_of_products_cur >= total_num_of_products:
+            return
+
 
 
 def Control_try(total_page):
@@ -84,13 +98,17 @@ def Control_try(total_page):
     for page in range(1,total_page+1):
         print('开始申请第'+str(page)+'页')
         get_try(page)
+        global total_num_of_products
+        global total_num_of_products_cur
+        if total_num_of_products_cur >= total_num_of_products:
+            return
         print('第'+str(page)+'页申请完成')
 
 #成功登录后将browser_for_login的cookies取出放到无头browser中即可
 def login():
     browser_for_login.get('https://www.jd.com')
-    #睡眠40秒以有足够时间来登录
-    time.sleep(40)
+    #睡眠一段时间以有足够时间来登录
+    time.sleep(SET['login_time'])
     cookies = browser_for_login.get_cookies()
     browser_for_login.close()
     browser.get('https://www.jd.com')
@@ -102,5 +120,6 @@ def login():
 
 if __name__ == '__main__':
     login()
-    #申请前3页
-    Control_try(3)
+    #申请前SET['total_num_of_page']页
+    Control_try(SET['total_num_of_page'])
+    print('申请完成')
