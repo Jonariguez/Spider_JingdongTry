@@ -8,15 +8,7 @@
 * selenium 3.14.1
 * pyquery 1.4
 
-### 使用说明
-
-1. 直接点击py文件即可执行
-2. 待浏览器打开京东后，手动登陆京东账户。
-3. 等待若干秒后，程序自动执行。
-4. 程序运行大概需要一小时以上。期间不能关闭模拟的浏览器。
-
-### 功能
-#### Method_First
+## Method_First
 作者：[Jonariguez](https://github.com/Jonariguez)
 
 * 已经申请过的商品就不会再申请了
@@ -24,7 +16,17 @@
 * 程序开始运行时会打开Chrome浏览器并打开[https://www.jd.com](https://www.jd.com),只需要在该浏览器登录即可，
 40秒后浏览器会关闭，此时便开始申请商品。
 
-#### Method_Second
+### 使用说明
+1. 直接运行Try_selenium.py文件即可
+2. 程序开始会自动打开浏览器，手动登录账号
+3. 等浏览器关闭之后，程序开始申请试用
+
+### 功能特点
+- [x] 采用headless模式，无浏览器界面
+- [x] 指定申请商品个数或者页数
+
+
+## Method_Second
 作者：[jzplp](https://github.com/jzplp)
 
 * 代码是在Method_First的之前代码上改动的。
@@ -33,16 +35,15 @@
 * 统计成功申请的商品个数，每天限制300个
 * 可以限制商品类别
 
-### 参考资料
+### 使用说明
+1. 直接点击py文件即可执行
+2. 待浏览器打开京东后，手动登陆京东账户。
+3. 等待若干秒后，程序自动执行。
+4. 程序运行大概需要一小时以上。期间不能关闭模拟的浏览器。
 
-* Python3网络爬虫开发实战  <br>
-  https://germey.gitbooks.io/python3webspider/content/
-* xmlns属性导致pyquery查询元素失败 <br>
-  https://blog.csdn.net/zx1245773445/article/details/82821642
 
 ### 待实现的功能
 
-#### Method_Second
 - [ ] 优化程序结构
 - [x] 在商品列表处剔除已经申请过的商品
 - [ ] 断点续申
@@ -51,3 +52,10 @@
 - [ ] 申请完成可以自动关闭电脑
 - [ ] 添加图形界面
 
+
+### 参考资料
+
+* Python3网络爬虫开发实战  <br>
+  https://germey.gitbooks.io/python3webspider/content/
+* xmlns属性导致pyquery查询元素失败 <br>
+  https://blog.csdn.net/zx1245773445/article/details/82821642
