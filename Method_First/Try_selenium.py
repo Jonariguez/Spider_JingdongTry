@@ -6,6 +6,7 @@ from selenium.webdriver.support import  expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import time
+import os
 from pyquery import PyQuery as pq
 from config import settings as SET
 
@@ -117,9 +118,16 @@ def login():
 
     browser.get('https://www.jd.com')
 
+def auto_showdown():
+    if SET['auto_shutdown'] == True:
+        print('\n5秒后将自动关机')
+        time.sleep(5)
+        os.system('shutdown -s -t 1')
 
 if __name__ == '__main__':
     login()
     #申请前SET['total_num_of_page']页
     Control_try(SET['total_num_of_page'])
+    browser.close()
     print('申请完成')
+    auto_showdown()
