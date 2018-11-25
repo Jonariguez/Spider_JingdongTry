@@ -2,6 +2,17 @@
 用python爬虫模拟浏览器来自动申请京东试用。<br>
 注意：此程序仅作为学习爬虫练习使用，不得扩散出去另作他用。<br>
 
+### 目录
+* [依赖](#依赖)
+* [Method_First](#Method_First)
+ * [使用说明](#使用说明)
+ * [功能特点](#功能特点)
+* [Method_Second](#Method_Second)
+ * [使用说明](#使用说明-1)
+ * [功能特点](#功能特点-1)
+ * [待实现的功能](#待实现的功能)
+* [参考资料](#参考资料)
+
 ### 依赖
 * Python 3.6
 * ChromeDriver([官网地址](https://sites.google.com/a/chromium.org/chromedriver/))
@@ -47,7 +58,6 @@
 * 申请完成后自动在log.txt中记录申请的时间和申请数量
 
 ### 待实现的功能
-
 - [ ] 优化程序结构
 - [x] 在商品列表处剔除已经申请过的商品
 - [ ] 自动检测登陆成功并5秒后开始试用
@@ -60,7 +70,6 @@
 
 
 ## 参考资料
-
 * Python3网络爬虫开发实战  <br>
   https://germey.gitbooks.io/python3webspider/content/
 * xmlns属性导致pyquery查询元素失败 <br>
