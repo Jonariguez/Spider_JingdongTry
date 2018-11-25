@@ -11,13 +11,30 @@ import json
 import time
 from pyquery import PyQuery as pq
 
+#载入自己编写的配置文件
+from Config import settings
+
 #全局变量
 #打开chrome浏览器
 browser = webdriver.Chrome()
-#设置最长等待时间为10秒
-wait = WebDriverWait(browser,10)
+#设置浏览器最长等待时间
+wait = WebDriverWait(browser, settings['waitTime'])
 
-#打开正确/屏蔽词文件,并处理
+def closeSW(iApplyNum):
+    """
+    在文件中输出申请个数 iApplyNum
+    关闭了浏览器和程序
+    """
+    #等待5秒
+    time.sleep(5)
+    #关闭浏览器
+    browser.quit()
+    with open("log.txt", 'a') as f:
+        #输出申请时间和数量
+        f.write( time.ctime() + " 申请数量：" + str(iApplyNum) + '\n')
+        
+    #退出程序
+    exit()
 
 def genekeys():
     #打开正确/屏蔽词文件,并处理
@@ -44,7 +61,7 @@ def goodJudge(goodName, goodPrice, keys):
     """
     根据商品名称和价格判断是否试用该商品
     """
-    if goodPrice < 30:
+    if goodPrice < settings['goodPrice']:
         return False
 
     for key in keys:
@@ -176,28 +193,21 @@ def get_try(cid, iApplyNum, maxApplyNum, keys):
             browser.switch_to.window(browser.window_handles[0])
 
             if iApplyNum >= maxApplyNum:
-                print("已经成功申请" + str(maxApplyNum) + "件商品")
-                return
+                print("已经成功申请" + str(maxApplyNum) + "件商品 申请结束")
+                closeSW(iApplyNum)
         print(cid+'类:第'+str(i+1)+'页申请完成')
 
 
-def trycate():
-    """
-    控制申请类型
-    """
-    #试用类型
-    #家用电器737 手机数码652 电脑办公670 家居家装1620 服饰鞋包1315 生鲜美食12218 钟表奢品5025 家庭清洁15901 食品饮料1320
-    cids = ['737', '652' ,'670', '1620', '1315', '12218' ,'5025' , '15901' ,'1320' ,]
-    return cids
-
 def trycid():
-
+    """
+    控制申请类别和数量 返回已申请数量iApplyNum
+    """
     keys = genekeys()
-    #京东限制 每天最大申请数量为300件
-    maxApplyNum = 300
+    #京东限制 每天最大申请数量
+    maxApplyNum = settings['maxApplyNum']
     iApplyNum = 0
-    #试用类型
-    cids = trycate()
+    #获取试用类型
+    cids = settings['cids']
     browser.get('https://try.jd.com/')
     browser.get('https://try.jd.com/activity/getActivityList')
     #执行js脚本 打开一个新选项卡
@@ -206,10 +216,15 @@ def trycid():
     for cid in cids:
         get_try(cid, iApplyNum, maxApplyNum, keys)
 
+    return iApplyNum
+
 
 if __name__ == '__main__':
     
     browser.get('https://www.jd.com/')
-    #睡眠60以足够来手动登陆，这样就获得了cookies
-    time.sleep(60)
-    trycid()
+    #睡眠一定时间以足够来手动登陆，这样就获得了cookies
+    time.sleep(settings['loginWait'])
+    iApplyNum = trycid()
+    #申请结束
+    closeSW(iApplyNum)
+    
