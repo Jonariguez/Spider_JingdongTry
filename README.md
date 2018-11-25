@@ -2,12 +2,12 @@
 用python爬虫模拟浏览器来自动申请京东试用。<br>
 注意：此程序仅作为学习爬虫练习使用，不得扩散出去另作他用。<br>
 
-### 目录
+### readme 目录
 * [依赖](#依赖)
-* [Method_First](#Method_First) 方法一
+* [Method_First](#Method_First)
   * [使用说明](#使用说明)
   * [功能特点](#功能特点)
-* [Method_Second](#Method_Second) 方法二
+* [Method_Second](#Method_Second)
   * [使用说明](#使用说明-1)
   * [功能特点](#功能特点-1)
   * [待实现的功能](#待实现的功能)
