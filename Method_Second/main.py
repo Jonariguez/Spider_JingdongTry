@@ -216,7 +216,6 @@ def trycid():
     browser.switch_to.window(browser.window_handles[0])
     for cid in cids:
         iApplyNum = get_try(cid, iApplyNum, maxApplyNum, keys)
-
     return iApplyNum
 
 
