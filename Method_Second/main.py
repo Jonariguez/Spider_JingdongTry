@@ -196,6 +196,7 @@ def get_try(cid, iApplyNum, maxApplyNum, keys):
                 print("已经成功申请" + str(maxApplyNum) + "件商品 申请结束")
                 closeSW(iApplyNum)
         print(cid+'类:第'+str(i+1)+'页申请完成')
+    return iApplyNum
 
 
 def trycid():
@@ -214,7 +215,7 @@ def trycid():
     browser.execute_script('window.open()')
     browser.switch_to.window(browser.window_handles[0])
     for cid in cids:
-        get_try(cid, iApplyNum, maxApplyNum, keys)
+        iApplyNum = get_try(cid, iApplyNum, maxApplyNum, keys)
 
     return iApplyNum
 
