@@ -9,6 +9,7 @@ import time
 import os
 from pyquery import PyQuery as pq
 from config import settings as SET
+import re
 
 #browser_for_login为正常浏览器，用于登录
 browser_for_login = webdriver.Chrome()
@@ -22,6 +23,11 @@ wait = WebDriverWait(browser,10)
 
 total_num_of_products = SET['total_products']
 total_num_of_products_cur = 0
+
+choice_list=[]
+ban_list=[]
+
+
 
 #所有的sleep为了是减慢速度, 防止被检查异常
 def do_try(url):
@@ -74,6 +80,9 @@ def get_try(page):
         #获得每个商品的标题，如果进行商品过滤则有可能有用
         title = item('.p-name').text()
         try_url = 'https:'+item('.link').attr('href')
+
+        if check_name(title) == False:
+            continue
         print(title)
         print(try_url)
         time.sleep(1)
@@ -124,7 +133,43 @@ def auto_showdown():
         time.sleep(5)
         os.system('shutdown -s -t 1')
 
+def deal_file():
+    global choice_list
+    global ban_list
+    if SET['choice']==True:
+        with open('choice.txt','r') as f:
+            choice_list = re.split('[ |.|,|!|\n]',f.read())
+            f.close()
+
+    if SET['ban']==True:
+        with open('ban.txt','r') as f:
+            ban_list = re.split('[ |.|,|!|\n]',f.read())
+            f.close()
+
+def check_name(title):
+    is_choice = False
+    if len(choice_list)==0:
+        is_choice = True
+    for ch in choice_list:
+        if ch in title:
+            is_choice = True
+            break
+
+    if is_choice == False:
+        return False
+    is_ban = False
+    for ba in ban_list:
+        if ba in title:
+            is_ban = True
+            break
+
+    if is_ban == True:
+        return False
+    return True
+
+
 if __name__ == '__main__':
+    deal_file()
     login()
     #申请前SET['total_num_of_page']页
     Control_try(SET['total_num_of_page'])
