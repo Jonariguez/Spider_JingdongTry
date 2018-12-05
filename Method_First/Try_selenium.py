@@ -116,9 +116,10 @@ def Control_try(total_page):
 
 #成功登录后将browser_for_login的cookies取出放到无头browser中即可
 def login():
-    browser_for_login.get('https://www.jd.com')
-    #睡眠一段时间以有足够时间来登录
-    time.sleep(SET['login_time'])
+    browser_for_login.get('https://passport.jd.com/new/login.aspx')
+    while browser_for_login.current_url!='https://www.jd.com/':
+        time.sleep(2)
+
     cookies = browser_for_login.get_cookies()
     browser_for_login.close()
     browser.get('https://www.jd.com')
