@@ -2,3 +2,4 @@ Thumbs.db
 debug.log
 log.txt
 *.py[cod]
+.idea
