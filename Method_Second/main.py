@@ -7,7 +7,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import  expected_conditions as EC
 from selenium.webdriver.common.by import By
-import json
 import time
 from pyquery import PyQuery as pq
 
@@ -42,7 +41,7 @@ def genekeys():
     for line in open("Truekeyword.txt", 'r' ,encoding='UTF-8' ):
         line = line[0:line.find('\n')]
         if line == '':
-            continue;
+            continue
         line = line.split('/')
         line[0] = line[0].strip()
         line[1] = line[1].strip()
@@ -70,15 +69,15 @@ def goodJudge(goodName, goodPrice, keys):
             booltrue = True
         for tk in key[0]:
             if tk == '':
-                continue;
+                continue
             if tk in goodName:
                 booltrue = True
-                break;
+                break
         if booltrue == False:
-            continue;
+            continue
         for tk in key[1]:
             if tk == '':
-                continue;
+                continue
             if tk in goodName:
                 return False
     return True
@@ -120,8 +119,8 @@ def do_try(url):
         #点击关注
         button2.click()
         #此时试用一件商品完成
-        return True
         time.sleep(2)
+        return True
     #抛出超时异常
     except TimeoutException:
         #这件商品不申请了，返回
@@ -189,12 +188,13 @@ def get_try(cid, iApplyNum, maxApplyNum, keys):
                 print("申请成功 " +str(itemprice) + "  " + itemname)
                 iApplyNum = iApplyNum + 1
             #停3秒
-            time.sleep(3)
+            time.sleep(2)
             browser.switch_to.window(browser.window_handles[0])
 
             if iApplyNum >= maxApplyNum:
                 print("已经成功申请" + str(maxApplyNum) + "件商品 申请结束")
                 closeSW(iApplyNum)
+            time.sleep(2)
         print(cid+'类:第'+str(i+1)+'页申请完成')
     return iApplyNum
 
@@ -218,12 +218,30 @@ def trycid():
         iApplyNum = get_try(cid, iApplyNum, maxApplyNum, keys)
     return iApplyNum
 
+def login():
+    """
+    登陆函数
+    """
+    #直接去登陆界面
+    browser.get('https://passport.jd.com/login.aspx')
+    #循环检测是否登陆
+    while 1:
+        try:
+            wait.until(
+                EC.presence_of_element_located((By.CSS_SELECTOR,
+                                        '#ttbar-login > div.dt.cw-icon > a'))
+            )
+            break
+        except TimeoutException:
+            continue
+    print('登陆成功！')
+    time.sleep(2)
 
 if __name__ == '__main__':
-    
-    browser.get('https://www.jd.com/')
-    #睡眠一定时间以足够来手动登陆，这样就获得了cookies
-    time.sleep(settings['loginWait'])
+
+    #登陆
+    login()
+    #开始申请 iApplyNum为申请成功的个数
     iApplyNum = trycid()
     #申请结束
     closeSW(iApplyNum)

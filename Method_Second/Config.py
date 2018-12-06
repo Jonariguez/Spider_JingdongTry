@@ -4,8 +4,6 @@ Config.py
 """
 
 settings = {
-    #登陆时等待的时间
-    'loginWait' : 60 ,
     #一天申请的限制个数
     'maxApplyNum' : 300 ,
     #试用类型
