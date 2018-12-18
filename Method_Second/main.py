@@ -14,10 +14,20 @@ from pyquery import PyQuery as pq
 from Config import settings
 
 #全局变量
-#打开chrome浏览器
-browser = webdriver.Chrome()
+
+#打开无界面的chrome浏览器
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--headless')
+#不打印不重要的日志信息
+chrome_options.add_argument('log-level=2')
+browser = webdriver.Chrome(chrome_options = chrome_options)
 #设置浏览器最长等待时间
 wait = WebDriverWait(browser, settings['waitTime'])
+
+#打开用于登陆的chrome浏览器
+browser_login = webdriver.Chrome()
+#设置浏览器最长等待时间
+wait_login = WebDriverWait(browser_login, settings['waitTime'])
 
 def closeSW(iApplyNum):
     """
@@ -223,11 +233,11 @@ def login():
     登陆函数
     """
     #直接去登陆界面
-    browser.get('https://passport.jd.com/login.aspx')
+    browser_login.get('https://passport.jd.com/login.aspx')
     #循环检测是否登陆
     while 1:
         try:
-            wait.until(
+            wait_login.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR,
                                         '#ttbar-login > div.dt.cw-icon > a'))
             )
@@ -237,6 +247,16 @@ def login():
     print('登陆成功！')
     time.sleep(2)
 
+    #把登陆浏览器的cookie转移到无界面浏览器上
+    #取得原浏览器的所有cookie
+    cookies = browser_login.get_cookies()
+    browser.get('https://www.jd.com')
+    #cookies是一个元素为字典的list
+    for cookie in cookies:
+        browser.add_cookie(cookie)
+    #关闭登陆浏览器
+    browser_login.quit()
+
 if __name__ == '__main__':
 
     #登陆
@@ -245,4 +265,3 @@ if __name__ == '__main__':
     iApplyNum = trycid()
     #申请结束
     closeSW(iApplyNum)
-    
