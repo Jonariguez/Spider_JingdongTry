@@ -79,12 +79,18 @@ def get_try(page):
     for item in items:
         #获得每个商品的标题，如果进行商品过滤则有可能有用
         title = item('.p-name').text()
-        try_url = 'https:'+item('.link').attr('href')
 
         if check_name(title) == False:
             continue
+
+        price_text = item('.p-price').text()[6:]
+        price = float(price_text)
+        if price < float(SET['price_limit']):
+            continue
+        try_url = 'https:'+item('.link').attr('href')
+        print('价格: ',price)
         print(title)
-        print(try_url)
+        #print(try_url)
         time.sleep(1)
         global total_num_of_products_cur
         global total_num_of_products
