@@ -9,6 +9,8 @@ from selenium.webdriver.support import  expected_conditions as EC
 from selenium.webdriver.common.by import By
 import time
 from pyquery import PyQuery as pq
+import json
+import os
 
 #载入自己编写的配置文件
 from Config import settings
@@ -29,6 +31,25 @@ browser_login = webdriver.Chrome()
 #设置浏览器最长等待时间
 wait_login = WebDriverWait(browser_login, settings['waitTime'])
 
+def readCookies():
+    """
+    从文件中读取cookies并返回 文件不存在则返回False
+    """
+    #不存在cookies文件
+    if os.path.exists("cookies.json") == False:
+        print("cookies文件不存在！")
+        return False
+    with open("cookies.json","r") as f:
+        cookies = json.load(f)
+    return cookies
+
+def writeCookies(cookies):
+    """
+    从浏览器中向文件写入cookies
+    """
+    with open("cookies.json", "w") as f:
+        json.dump(cookies, f)
+
 def closeSW(iApplyNum):
     """
     在文件中输出申请个数 iApplyNum
@@ -36,12 +57,20 @@ def closeSW(iApplyNum):
     """
     #等待5秒
     time.sleep(5)
+    #保存浏览器cookies到文件中
+    cookies = browser.get_cookies()
+    writeCookies(cookies)
+
     #关闭浏览器
     browser.quit()
     with open("log.txt", 'a') as f:
         #输出申请时间和数量
         f.write( time.ctime() + " 申请数量：" + str(iApplyNum) + '\n')
-        
+
+    #是否关闭电脑
+    if settings['shutdown'] == True:
+        os.system("shutdown -s -f")
+
     #退出程序
     exit()
 
@@ -232,6 +261,14 @@ def login():
     """
     登陆函数
     """
+    #必须访问一次京东
+    browser_login.get('https://jd.com')
+    #读取文件中的cookies
+    cookies = readCookies()
+    if cookies != False:
+        #如果从文件中读取到了cookies，就放入浏览器中
+        for cookie in cookies:
+            browser_login.add_cookie(cookie)
     #直接去登陆界面
     browser_login.get('https://passport.jd.com/login.aspx')
     #循环检测是否登陆
@@ -251,7 +288,7 @@ def login():
     #取得原浏览器的所有cookie
     cookies = browser_login.get_cookies()
     browser.get('https://www.jd.com')
-    #cookies是一个元素为字典的list
+    #cookies是一个以字典为元素的list
     for cookie in cookies:
         browser.add_cookie(cookie)
     #关闭登陆浏览器

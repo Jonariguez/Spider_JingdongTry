@@ -3,3 +3,5 @@ debug.log
 log.txt
 *.py[cod]
 .idea
+1.json
+cookies.json
