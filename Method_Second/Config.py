@@ -5,7 +5,7 @@ Config.py
 
 settings = {
     #一天申请的限制个数
-    'maxApplyNum' : 1 ,
+    'maxApplyNum' : 300 ,
     #试用类型
     #家用电器737 手机数码652 电脑办公670 家居家装1620 服饰鞋包1315 生鲜美食12218 钟表奢品5025 家庭清洁15901 食品饮料1320
     'cids' : ['737', '652' ,'670', '1620', '1315', '12218' ,'5025' , '15901' ,'1320' ,] ,
@@ -14,5 +14,9 @@ settings = {
     #浏览器button最长等待时间 单位秒
     'waitTime' : 10 ,
     #试用结束后是否自动关机 True代表关机
-    'shutdown' : False
+    'shutdown' : False ,
+    #用户名
+    'username' : "JDuser" ,
+    #密码
+    "password" : "JDpass" ,
 }

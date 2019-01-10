@@ -271,6 +271,28 @@ def login():
             browser_login.add_cookie(cookie)
     #直接去登陆界面
     browser_login.get('https://passport.jd.com/login.aspx')
+    #找到账户登陆的窗口
+    button_login = browser_login.find_elements_by_css_selector('#content > div.login-wrap > div.w > div > div.login-tab.login-tab-r > a')
+    button_login = button_login[0]
+    #点击
+    button_login.click()
+    time.sleep(2)
+
+    #找到输入框
+    input_username =  browser_login.find_element_by_name('loginname')
+    #输入用户名
+    input_username.send_keys(settings['username'])
+    #找到密码框
+    input_password = browser_login.find_element_by_name('nloginpwd')
+    #输入密码
+    input_password.send_keys(settings['password'])
+    #找到登录按钮
+    button_logOK = browser_login.find_elements_by_id('loginsubmit')
+    button_logOK = button_logOK[0]
+    time.sleep(2)
+    #点击
+    button_logOK.click()
+
     #循环检测是否登陆
     while 1:
         try:
