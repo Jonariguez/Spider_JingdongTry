@@ -15,8 +15,4 @@ settings = {
     'waitTime' : 10 ,
     #试用结束后是否自动关机 True代表关机
     'shutdown' : False ,
-    #用户名
-    'username' : "JDuser" ,
-    #密码
-    "password" : "JDpass" ,
 }
