@@ -11,6 +11,8 @@ import time
 from pyquery import PyQuery as pq
 import json
 import os
+import getpass
+import base64
 
 #载入自己编写的配置文件
 from Config import settings
@@ -278,14 +280,32 @@ def login():
     button_login.click()
     time.sleep(2)
 
+    #取得用户名和密码的过程
+    #如果文件不存在
+    if os.path.exists("login.txt") == False:
+        username = input("请输入京东用户名:")
+        password = getpass.getpass("请输入京东密码(输入不会显示在屏幕上):")
+    else:
+        #从文件中读入用户名和密码
+        with open("login.txt",) as f:
+            up = f.read()
+        up = up.split('\n')
+        username = up[0].encode()
+        password = up[1].encode()
+        #base64解码
+        username = base64.b64decode(username)
+        username = username.decode()
+        password = base64.b64decode(password)
+        password = password.decode()
+
     #找到输入框
     input_username =  browser_login.find_element_by_name('loginname')
     #输入用户名
-    input_username.send_keys(settings['username'])
+    input_username.send_keys(username)
     #找到密码框
     input_password = browser_login.find_element_by_name('nloginpwd')
     #输入密码
-    input_password.send_keys(settings['password'])
+    input_password.send_keys(password)
     #找到登录按钮
     button_logOK = browser_login.find_elements_by_id('loginsubmit')
     button_logOK = button_logOK[0]
@@ -305,6 +325,18 @@ def login():
             continue
     print('登陆成功！')
     time.sleep(2)
+
+    #登录成功后 若不存在login.txt，则把用户名和密码写入文件
+    if os.path.exists("login.txt") == False:
+        #base64编码
+        username = username.encode()
+        username = base64.b64encode(username)
+        password = password.encode()
+        password = base64.b64encode(password)
+        # 写入文件中
+        with open("login.txt", "w") as f:
+            f.write(username.decode() +"\n")
+            f.write(password.decode())
 
     #把登陆浏览器的cookie转移到无界面浏览器上
     #取得原浏览器的所有cookie
